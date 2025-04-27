@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Balanced Brackets Recognizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        input {
+            padding: 0.5rem;
+            font-size: 1rem;
+            margin: 1rem 0;
+            width: 300px;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .fa-visual {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .state {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ddd;
+            line-height: 50px;
+            text-align: center;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .state.active {
+            background: #4CAF50;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .state.invalid {
+            background: #ff4444;
+            color: white;
+        }
+
+        .result {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .valid {
+            background: #dfffdf;
+            color: #2a802a;
+        }
+
+        .invalid-result {
+            background: #ffe6e6;
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Balanced Parentheses Recognizer</h1>
+        <input type="text" id="input" placeholder="Enter string with parentheses ()">
+        <button onclick="checkBalance()">Check Balance</button>
+
+        <div class="fa-visual">
+            <div id="state0" class="state">0</div>
+            <div id="stateIndicator" style="display: inline-block;">→</div>
+        </div>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        let currentState = 0;
+        let isValid = true;
+
+        async function checkBalance() {
+            const input = document.getElementById('input').value;
+            const resultDiv = document.getElementById('result');
+            const states = document.getElementsByClassName('state');
+            currentState = 0;
+            isValid = true;
+
+            // Reset UI
+            resultDiv.className = 'result';
+            resultDiv.textContent = '';
+            Array.from(states).forEach(state => {
+                state.className = 'state';
+            });
+
+            for (let i = 0; i < input.length; i++) {
+                const char = input[i];
+                
+                // Update state
+                if (char === '(') {
+                    currentState++;
+                } else if (char === ')') {
+                    currentState--;
+                } else {
+                    isValid = false;
+                    break;
+                }
+
+                // Check for invalid state
+                if (currentState < 0) {
+                    isValid = false;
+                    break;
+                }
+
+                // Update visualization
+                const currentStateElement = document.getElementById(`state${Math.max(0, currentState)}`);
+                if (currentStateElement) {
+                    currentStateElement.classList.add('active');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    currentStateElement.classList.remove('active');
+                }
+            }
+
+            // Final validation
+            isValid = isValid && currentState === 0;
+
+            // Show result
+            if (isValid) {
+                resultDiv.textContent = 'Valid! The parentheses are balanced.';
+                resultDiv.classList.add('valid');
+            } else {
+                resultDiv.textContent = 'Invalid! Parentheses are not balanced.';
+                resultDiv.classList.add('invalid-result');
+            }
+        }
+    </script>
+</body>
+</html>
